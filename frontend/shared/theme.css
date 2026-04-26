@@ -1,0 +1,186 @@
+/* ============================================================
+   AllergenGuard — Theme
+   Shared design tokens (colors, spacing, fonts, shadows).
+   Every other CSS file pulls from this one.
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   1. LIGHT MODE (default)
+   These are the "default" colors when the user's system or
+   manual setting is light mode.
+   ------------------------------------------------------------ */
+:root {
+  /* Severity colors — semantic, not decorative */
+  --ag-danger:        #D7263D;   /* allergen detected (banner red)   */
+  --ag-danger-soft:   #FCE8EB;   /* danger background tint           */
+  --ag-safe:          #2A9D8F;   /* safe state (green)               */
+  --ag-warning:       #F4A261;   /* caution / unverified ingredients */
+
+  /* Surfaces */
+  --ag-paper:         #FAFAFA;   /* page background                  */
+  --ag-surface:       #FFFFFF;   /* cards, popup, banner             */
+  --ag-surface-alt:   #F1F3F5;   /* subtle alt surface (hover, etc.) */
+
+  /* Text */
+  --ag-ink:           #1A1A1A;   /* primary text                     */
+  --ag-ink-soft:      #4A4A4A;   /* secondary text                   */
+  --ag-ink-mute:      #8A8A8A;   /* captions, placeholders           */
+
+  /* Borders & dividers */
+  --ag-line:          #E4E6EA;   /* hairlines and card borders       */
+
+  /* Brand accent */
+  --ag-accent:        #264653;   /* trust-blue (buttons, links)      */
+  --ag-accent-hover:  #1F3A45;
+
+  /* Spacing scale (4px base) */
+  --ag-space-1:  4px;
+  --ag-space-2:  8px;
+  --ag-space-3:  12px;
+  --ag-space-4:  16px;
+  --ag-space-5:  24px;
+  --ag-space-6:  32px;
+
+  /* Border radius */
+  --ag-radius-sm:  6px;
+  --ag-radius-md:  8px;
+  --ag-radius-lg:  12px;
+  --ag-radius-pill: 999px;
+
+  /* Shadows */
+  --ag-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --ag-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --ag-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+  /* Animation timings (kept short — safety tool) */
+  --ag-ease:       cubic-bezier(0.4, 0, 0.2, 1);
+  --ag-duration:   180ms;
+
+  /* Typography */
+  --ag-font: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI",
+             Roboto, Helvetica, Arial, sans-serif;
+
+  --ag-text-xs:   12px;
+  --ag-text-sm:   14px;
+  --ag-text-md:   16px;
+  --ag-text-lg:   20px;
+  --ag-text-xl:   24px;
+  --ag-text-xxl:  32px;
+}
+
+
+/* ------------------------------------------------------------
+   2. DARK MODE
+   When the user toggles dark mode in settings, we add
+   data-theme="dark" to the <html> tag, which swaps these
+   variables in. Every other CSS file just keeps using
+   var(--ag-ink) etc. — the values change automatically.
+   ------------------------------------------------------------ */
+[data-theme="dark"] {
+  /* Severity colors stay loud in dark mode (slightly adjusted) */
+  --ag-danger:        #FF4D6A;
+  --ag-danger-soft:   #2A0F14;
+  --ag-safe:          #4FCFB8;
+  --ag-warning:       #F4A261;
+
+  /* Surfaces */
+  --ag-paper:         #0E0F12;
+  --ag-surface:       #161820;
+  --ag-surface-alt:   #1F2230;
+
+  /* Text */
+  --ag-ink:           #F2F3F5;
+  --ag-ink-soft:      #C4C7CD;
+  --ag-ink-mute:      #7A7E88;
+
+  /* Borders */
+  --ag-line:          #2A2D38;
+
+  /* Brand accent */
+  --ag-accent:        #5BA3B5;
+  --ag-accent-hover:  #7AB9C8;
+
+  /* Shadows are subtler on dark */
+  --ag-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --ag-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --ag-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.6);
+}
+
+
+/* ------------------------------------------------------------
+   3. GLOBAL RESETS
+   A tiny baseline so we don't fight browser defaults in every
+   file. Only applies to elements inside our extension UI.
+   ------------------------------------------------------------ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--ag-font);
+  font-size: var(--ag-text-md);
+  color: var(--ag-ink);
+  background: var(--ag-paper);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+
+/* ------------------------------------------------------------
+   4. SHARED UTILITY CLASSES
+   Tiny reusable helpers other files can apply directly.
+   ------------------------------------------------------------ */
+
+/* The shield brand mark (used in popup, onboarding, settings) */
+.ag-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ag-space-2);
+  font-weight: 700;
+  font-size: var(--ag-text-lg);
+  color: var(--ag-ink);
+}
+
+/* Standard primary button */
+.ag-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--ag-space-3) var(--ag-space-5);
+  background: var(--ag-accent);
+  color: #FFFFFF;
+  border: none;
+  border-radius: var(--ag-radius-md);
+  font-family: var(--ag-font);
+  font-size: var(--ag-text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--ag-duration) var(--ag-ease);
+}
+.ag-btn-primary:hover {
+  background: var(--ag-accent-hover);
+}
+
+/* Standard secondary button (outlined) */
+.ag-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--ag-space-3) var(--ag-space-5);
+  background: transparent;
+  color: var(--ag-ink);
+  border: 1px solid var(--ag-line);
+  border-radius: var(--ag-radius-md);
+  font-family: var(--ag-font);
+  font-size: var(--ag-text-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--ag-duration) var(--ag-ease);
+}
+.ag-btn-secondary:hover {
+  background: var(--ag-surface-alt);
+}

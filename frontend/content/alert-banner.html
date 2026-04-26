@@ -1,0 +1,129 @@
+<!--
+============================================================
+  AllergenGuard — Alert Banner Template
+  Reference HTML structure for the in-page warning banner.
+
+  This file is NOT loaded directly by Chrome.
+  It exists as a readable blueprint.
+  The JavaScript file (alert-banner.js) builds this same
+  structure dynamically and injects it into the page when
+  an allergen is detected.
+
+  Two states:
+    1. Collapsed — default state when banner first appears
+    2. Expanded — after user clicks the chevron for details
+============================================================
+-->
+
+
+<!-- ============================================================
+  STATE 1: COLLAPSED BANNER
+  This is what the user sees the moment an allergen is found.
+  Single horizontal row: dismiss | warning text | expand chevron
+============================================================ -->
+
+<div class="ag-banner" id="ag-banner" role="alert" aria-live="assertive">
+
+  <!-- Left: Dismiss (X) button -->
+  <button
+    class="ag-banner__dismiss"
+    id="ag-banner-dismiss"
+    aria-label="Dismiss warning"
+    type="button">
+    ✕
+  </button>
+
+  <!-- Middle: The actual warning content -->
+  <div class="ag-banner__content">
+
+    <!-- Warning icon -->
+    <span class="ag-banner__icon" aria-hidden="true">⚠</span>
+
+    <!-- Warning text — populated by JavaScript -->
+    <span class="ag-banner__text">
+      <strong class="ag-banner__label">WARNING</strong>
+      <span class="ag-banner__separator">—</span>
+      <span class="ag-banner__message">
+        Allergen detected: <strong id="ag-banner-allergens">PEANUTS</strong>
+      </span>
+    </span>
+  </div>
+
+  <!-- Right: Expand chevron -->
+  <button
+    class="ag-banner__expand"
+    id="ag-banner-expand"
+    aria-label="Show more details"
+    aria-expanded="false"
+    type="button">
+    <span class="ag-banner__chevron">⌄</span>
+  </button>
+
+
+  <!-- ============================================================
+    STATE 2: EXPANDED DETAILS PANEL
+    Hidden by default. Shown when user clicks the chevron.
+    Holds the matched ingredient and the "Leave Page" button.
+  ============================================================ -->
+  <div class="ag-banner__details" id="ag-banner-details" hidden>
+
+    <!-- Matched ingredient row -->
+    <div class="ag-banner__detail-row">
+      <span class="ag-banner__detail-label">Matched ingredient:</span>
+      <span class="ag-banner__detail-value" id="ag-banner-matched">peanut oil</span>
+    </div>
+
+    <!-- Action buttons -->
+    <div class="ag-banner__actions">
+      <button
+        class="ag-banner__action-leave"
+        id="ag-banner-leave"
+        type="button">
+        Leave Page
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================
+  CONFIRMATION MODAL (separate from banner)
+  Appears when user clicks the X to dismiss.
+  Asks "Are you sure?" because the user opted into warnings
+  for this allergen — we want a deliberate confirmation.
+============================================================ -->
+
+<div class="ag-confirm" id="ag-confirm" role="dialog" aria-modal="true" hidden>
+
+  <!-- Dark backdrop behind the modal -->
+  <div class="ag-confirm__backdrop" id="ag-confirm-backdrop"></div>
+
+  <!-- The actual modal box -->
+  <div class="ag-confirm__box" role="document">
+
+    <!-- Modal title -->
+    <h2 class="ag-confirm__title">Dismiss this warning?</h2>
+
+    <!-- Modal description -->
+    <p class="ag-confirm__description">
+      This product contains an allergen you flagged.
+      Are you sure you want to hide this warning?
+    </p>
+
+    <!-- Action buttons: Cancel + Confirm -->
+    <div class="ag-confirm__actions">
+      <button
+        class="ag-confirm__cancel"
+        id="ag-confirm-cancel"
+        type="button">
+        Cancel
+      </button>
+      <button
+        class="ag-confirm__yes"
+        id="ag-confirm-yes"
+        type="button">
+        Yes, dismiss
+      </button>
+    </div>
+  </div>
+</div>

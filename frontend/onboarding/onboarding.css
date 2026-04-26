@@ -1,0 +1,405 @@
+/* ============================================================
+   AllergenGuard — Onboarding Styles
+   The full-page welcome tour styling.
+   Runs in its own browser tab — full design freedom.
+
+   Pulls design tokens from shared/theme.css.
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   1. PAGE CONTAINER
+   Center the onboarding flow vertically and horizontally.
+   The min-height ensures it's centered even on tall screens.
+   ------------------------------------------------------------ */
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background: var(--ag-paper);
+  color: var(--ag-ink);
+}
+
+.ag-onboard {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: var(--ag-space-6) var(--ag-space-5);
+  min-height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--ag-space-6);
+}
+
+
+/* ============================================================
+   2. PROGRESS DOTS
+   Five small dots at the top showing onboarding progress.
+   ============================================================ */
+.ag-onboard__progress {
+  display: flex;
+  justify-content: center;
+  gap: var(--ag-space-2);
+  padding: var(--ag-space-4) 0;
+}
+
+.ag-onboard__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--ag-radius-pill);
+  background: var(--ag-line);
+  transition: background var(--ag-duration) var(--ag-ease),
+              width var(--ag-duration) var(--ag-ease);
+}
+
+/* The active dot is wider AND colored, like a pill */
+.ag-onboard__dot--active {
+  width: 24px;
+  background: var(--ag-accent);
+}
+
+
+/* ============================================================
+   3. SCREEN CONTAINER
+   Each screen is a flex column. Hidden by default; only
+   the active screen is shown via the [hidden] attribute.
+   ============================================================ */
+.ag-onboard__screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: var(--ag-space-4);
+  padding: var(--ag-space-5) 0;
+
+  /* Fade-in animation when screen becomes active */
+  animation: ag-onboard-fade 240ms var(--ag-ease) both;
+}
+
+.ag-onboard__screen[hidden] {
+  display: none;
+}
+
+
+/* ============================================================
+   4. HERO ZONE — logo or emoji at the top of each screen
+   ============================================================ */
+.ag-onboard__hero {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--ag-space-2);
+}
+
+.ag-onboard__logo {
+  width: 80px;
+  height: 80px;
+  display: block;
+}
+
+.ag-onboard__emoji {
+  font-size: 64px;
+  line-height: 1;
+  display: inline-block;
+  /* Subtle bounce animation when screen mounts */
+  animation: ag-onboard-bounce 600ms var(--ag-ease) both;
+}
+
+/* Success checkmark variant — green circle with white check */
+.ag-onboard__emoji--success {
+  width: 96px;
+  height: 96px;
+  background: var(--ag-safe);
+  color: #FFFFFF;
+  font-size: 48px;
+  font-weight: 700;
+  border-radius: var(--ag-radius-pill);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(42, 157, 143, 0.3);
+}
+
+
+/* ============================================================
+   5. TYPOGRAPHY
+   Title and subtitle styling for screen content.
+   ============================================================ */
+.ag-onboard__title {
+  margin: 0;
+  font-size: var(--ag-text-xxl);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--ag-ink);
+  max-width: 480px;
+}
+
+.ag-onboard__subtitle {
+  margin: 0;
+  font-size: var(--ag-text-md);
+  line-height: 1.6;
+  color: var(--ag-ink-soft);
+  max-width: 480px;
+}
+
+.ag-onboard__subtitle strong {
+  color: var(--ag-ink);
+  font-weight: 700;
+}
+
+
+/* ============================================================
+   6. PLATFORMS LIST (Screen 3)
+   Small chips showing the supported grocery sites.
+   ============================================================ */
+.ag-onboard__platforms {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--ag-space-2);
+  margin: var(--ag-space-3) 0;
+}
+
+.ag-onboard__platform {
+  padding: var(--ag-space-2) var(--ag-space-4);
+  background: var(--ag-surface);
+  border: 1px solid var(--ag-line);
+  border-radius: var(--ag-radius-pill);
+}
+
+.ag-onboard__platform-name {
+  font-size: var(--ag-text-sm);
+  font-weight: 600;
+  color: var(--ag-ink);
+}
+
+
+/* ============================================================
+   7. ALLERGEN GRID (Screen 4)
+   3x3 grid of selectable allergen cards.
+   ============================================================ */
+.ag-onboard__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--ag-space-3);
+  width: 100%;
+  max-width: 480px;
+  margin: var(--ag-space-3) 0;
+}
+
+
+/* ------------------------------------------------------------
+   7a. Individual allergen card
+   Tappable, with clear selected/unselected states.
+   ------------------------------------------------------------ */
+.ag-onboard__card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ag-space-2);
+  padding: var(--ag-space-4) var(--ag-space-2);
+  min-height: 100px;
+
+  background: var(--ag-surface);
+  border: 2px solid var(--ag-line);
+  border-radius: var(--ag-radius-md);
+
+  cursor: pointer;
+  user-select: none;
+  transition: all var(--ag-duration) var(--ag-ease);
+}
+
+.ag-onboard__card:hover {
+  border-color: var(--ag-accent);
+  transform: translateY(-2px);
+  box-shadow: var(--ag-shadow-sm);
+}
+
+.ag-onboard__card:focus-visible {
+  outline: 2px solid var(--ag-accent);
+  outline-offset: 2px;
+}
+
+/* Selected state — clearly different look */
+.ag-onboard__card.is-selected {
+  background: var(--ag-accent);
+  border-color: var(--ag-accent);
+  color: #FFFFFF;
+  transform: translateY(-1px);
+  box-shadow: var(--ag-shadow-md);
+}
+
+.ag-onboard__card.is-selected .ag-onboard__card-label {
+  color: #FFFFFF;
+}
+
+.ag-onboard__card-emoji {
+  font-size: 32px;
+  line-height: 1;
+}
+
+.ag-onboard__card-label {
+  font-size: var(--ag-text-sm);
+  font-weight: 600;
+  color: var(--ag-ink);
+  text-align: center;
+  line-height: 1.2;
+}
+
+
+/* Selected indicator — small checkmark in the corner */
+.ag-onboard__card-check {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 18px;
+  height: 18px;
+  background: #FFFFFF;
+  color: var(--ag-accent);
+  border-radius: var(--ag-radius-pill);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.ag-onboard__card {
+  position: relative;   /* anchor for the absolute checkmark */
+}
+
+.ag-onboard__card.is-selected .ag-onboard__card-check {
+  display: inline-flex;
+  animation: ag-onboard-pop 200ms var(--ag-ease) both;
+}
+
+
+/* ============================================================
+   8. SELECTION COUNTER (Screen 4)
+   "0 selected" / "3 selected" live count.
+   ============================================================ */
+.ag-onboard__count {
+  margin: 0;
+  font-size: var(--ag-text-sm);
+  font-weight: 600;
+  color: var(--ag-ink-soft);
+  letter-spacing: 0.02em;
+}
+
+
+/* ============================================================
+   9. ACTION BUTTONS
+   Footer button row — Back + Continue side by side.
+   ============================================================ */
+.ag-onboard__actions {
+  display: flex;
+  justify-content: center;
+  gap: var(--ag-space-3);
+  margin-top: var(--ag-space-4);
+  width: 100%;
+  max-width: 480px;
+}
+
+.ag-onboard__btn-primary,
+.ag-onboard__btn-secondary {
+  flex: 1;
+  padding: var(--ag-space-3) var(--ag-space-5);
+  font-size: var(--ag-text-md);
+  font-weight: 600;
+}
+
+/* Cap button width so they don't stretch absurdly wide */
+.ag-onboard__btn-primary {
+  max-width: 240px;
+}
+
+.ag-onboard__btn-secondary {
+  max-width: 160px;
+}
+
+/* Full-width final button on screen 5 */
+.ag-onboard__btn-primary--full {
+  flex: none;
+  width: 100%;
+  max-width: 320px;
+}
+
+/* Disabled state for the Continue button on screen 4 */
+.ag-onboard__btn-primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+
+/* ============================================================
+   10. ANIMATIONS
+   ============================================================ */
+@keyframes ag-onboard-fade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ag-onboard-bounce {
+  0% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes ag-onboard-pop {
+  from {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+
+/* ============================================================
+   11. RESPONSIVE — narrower screens
+   On phones / narrow windows, shrink the grid to 2 columns
+   and tighten spacing.
+   ============================================================ */
+@media (max-width: 520px) {
+  .ag-onboard {
+    padding: var(--ag-space-4) var(--ag-space-3);
+    gap: var(--ag-space-4);
+  }
+
+  .ag-onboard__title {
+    font-size: var(--ag-text-xl);
+  }
+
+  .ag-onboard__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .ag-onboard__emoji {
+    font-size: 56px;
+  }
+
+  .ag-onboard__btn-primary,
+  .ag-onboard__btn-secondary {
+    padding: var(--ag-space-3) var(--ag-space-4);
+  }
+}

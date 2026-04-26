@@ -1,0 +1,490 @@
+/* ============================================================
+   AllergenGuard — Alert Banner Styles
+   Styles the in-page warning banner + confirmation modal.
+
+   IMPORTANT: This CSS is injected into 3rd-party websites
+   (Amazon, DoorDash, Uber Eats, ShopRite). Every selector
+   must be tightly scoped under .ag-banner or .ag-confirm
+   to avoid styling the host site by accident.
+
+   Pulls design tokens from shared/theme.css.
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   1. RESET — wipe inherited styles from the host site
+   The host page may have rules like "button { padding: 0 }"
+   that would break our buttons. We reset our elements first,
+   then layer our own styling on top.
+   ------------------------------------------------------------ */
+.ag-banner,
+.ag-banner *,
+.ag-confirm,
+.ag-confirm * {
+  all: revert;
+  box-sizing: border-box;
+  font-family: var(--ag-font);
+}
+
+
+/* ============================================================
+   2. THE BANNER ITSELF
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   2a. Outer banner container
+   Fixed at the very top of the host page. z-index is huge
+   so it sits above ANY element on the page (modals, popups,
+   sticky headers, etc.). The slide-down animation runs once
+   on mount.
+   ------------------------------------------------------------ */
+.ag-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2147483647;          /* max signed 32-bit int — wins all stacking */
+
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ag-space-3);
+  padding: var(--ag-space-3) var(--ag-space-4);
+
+  background: var(--ag-danger);
+  color: #FFFFFF;
+  border-bottom: 3px solid #9A1A2C;     /* darker red base for grounding */
+  box-shadow: var(--ag-shadow-lg);
+
+  font-size: var(--ag-text-md);
+  line-height: 1.4;
+
+  /* Slide-down animation when banner first appears */
+  animation: ag-slide-down 220ms var(--ag-ease) both;
+}
+
+/* ------------------------------------------------------------
+   2b. Pulsing border — draws the eye without flashing
+   Subtle, slow pulse on the bottom border. Loops forever
+   while the banner is visible. Stops feeling urgent after
+   ~10 seconds, which is fine — the message is already read.
+   ------------------------------------------------------------ */
+.ag-banner::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -3px;
+  height: 3px;
+  background: #FFFFFF;
+  opacity: 0;
+  animation: ag-pulse 2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+
+/* ------------------------------------------------------------
+   2c. Dismiss button (X on the LEFT)
+   ------------------------------------------------------------ */
+.ag-banner__dismiss {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(255, 255, 255, 0.15);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: var(--ag-radius-pill);
+
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--ag-duration) var(--ag-ease);
+}
+.ag-banner__dismiss:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+.ag-banner__dismiss:focus-visible {
+  outline: 2px solid #FFFFFF;
+  outline-offset: 2px;
+}
+
+
+/* ------------------------------------------------------------
+   2d. Middle content row — icon + warning text
+   Flex-grow:1 makes it fill the space between the X and
+   the chevron, pushing the chevron to the far right.
+   ------------------------------------------------------------ */
+.ag-banner__content {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  gap: var(--ag-space-2);
+  min-width: 0;                  /* allows text to truncate properly */
+}
+
+.ag-banner__icon {
+  font-size: 22px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.ag-banner__text {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--ag-space-2);
+  min-width: 0;
+}
+
+.ag-banner__label {
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: var(--ag-text-md);
+}
+
+.ag-banner__separator {
+  opacity: 0.7;
+}
+
+.ag-banner__message {
+  font-weight: 500;
+}
+
+#ag-banner-allergens {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+
+/* ------------------------------------------------------------
+   2e. Expand chevron button (right side)
+   Rotates 180° when the panel is open.
+   ------------------------------------------------------------ */
+.ag-banner__expand {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(255, 255, 255, 0.15);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: var(--ag-radius-pill);
+
+  cursor: pointer;
+  transition: background var(--ag-duration) var(--ag-ease);
+}
+.ag-banner__expand:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+.ag-banner__expand:focus-visible {
+  outline: 2px solid #FFFFFF;
+  outline-offset: 2px;
+}
+
+.ag-banner__chevron {
+  display: inline-block;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  transition: transform var(--ag-duration) var(--ag-ease);
+}
+
+/* When expanded, flip chevron upward */
+.ag-banner__expand[aria-expanded="true"] .ag-banner__chevron {
+  transform: rotate(180deg);
+}
+
+
+/* ------------------------------------------------------------
+   2f. Expanded details panel
+   Hidden by default via the [hidden] attribute.
+   When shown, takes the full width of the banner (flex-basis:100%)
+   so it drops below the row above it.
+   ------------------------------------------------------------ */
+.ag-banner__details {
+  flex: 0 0 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ag-space-3);
+  padding-top: var(--ag-space-3);
+  margin-top: var(--ag-space-2);
+  border-top: 1px solid rgba(255, 255, 255, 0.25);
+
+  animation: ag-fade-in 180ms var(--ag-ease) both;
+}
+
+.ag-banner__details[hidden] {
+  display: none;
+}
+
+.ag-banner__detail-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--ag-space-2);
+  font-size: var(--ag-text-sm);
+}
+
+.ag-banner__detail-label {
+  opacity: 0.85;
+  font-weight: 500;
+}
+
+.ag-banner__detail-value {
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.18);
+  padding: 2px var(--ag-space-2);
+  border-radius: var(--ag-radius-sm);
+}
+
+.ag-banner__actions {
+  display: flex;
+  gap: var(--ag-space-2);
+}
+
+.ag-banner__action-leave {
+  padding: var(--ag-space-2) var(--ag-space-4);
+  background: #FFFFFF;
+  color: var(--ag-danger);
+  border: none;
+  border-radius: var(--ag-radius-md);
+  font-size: var(--ag-text-sm);
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform var(--ag-duration) var(--ag-ease),
+              box-shadow var(--ag-duration) var(--ag-ease);
+}
+.ag-banner__action-leave:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+.ag-banner__action-leave:focus-visible {
+  outline: 2px solid #FFFFFF;
+  outline-offset: 2px;
+}
+
+
+/* ============================================================
+   3. CONFIRMATION MODAL
+   Appears when the user clicks the X to dismiss.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   3a. Modal wrapper — covers the whole viewport
+   ------------------------------------------------------------ */
+.ag-confirm {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--ag-space-4);
+
+  font-family: var(--ag-font);
+  animation: ag-fade-in 160ms var(--ag-ease) both;
+}
+
+.ag-confirm[hidden] {
+  display: none;
+}
+
+/* ------------------------------------------------------------
+   3b. Backdrop — semi-transparent overlay behind the modal box
+   ------------------------------------------------------------ */
+.ag-confirm__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  cursor: pointer;
+}
+
+/* ------------------------------------------------------------
+   3c. The modal box itself
+   ------------------------------------------------------------ */
+.ag-confirm__box {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 420px;
+  padding: var(--ag-space-5);
+
+  background: var(--ag-surface);
+  color: var(--ag-ink);
+  border-radius: var(--ag-radius-lg);
+  box-shadow: var(--ag-shadow-lg);
+
+  animation: ag-pop-in 200ms var(--ag-ease) both;
+}
+
+.ag-confirm__title {
+  margin: 0 0 var(--ag-space-2) 0;
+  font-size: var(--ag-text-lg);
+  font-weight: 700;
+  color: var(--ag-ink);
+}
+
+.ag-confirm__description {
+  margin: 0 0 var(--ag-space-5) 0;
+  font-size: var(--ag-text-sm);
+  color: var(--ag-ink-soft);
+  line-height: 1.5;
+}
+
+.ag-confirm__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--ag-space-2);
+}
+
+.ag-confirm__cancel {
+  padding: var(--ag-space-3) var(--ag-space-4);
+  background: var(--ag-surface-alt);
+  color: var(--ag-ink);
+  border: 1px solid var(--ag-line);
+  border-radius: var(--ag-radius-md);
+  font-size: var(--ag-text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--ag-duration) var(--ag-ease);
+}
+.ag-confirm__cancel:hover {
+  background: var(--ag-line);
+}
+
+.ag-confirm__yes {
+  padding: var(--ag-space-3) var(--ag-space-4);
+  background: var(--ag-danger);
+  color: #FFFFFF;
+  border: none;
+  border-radius: var(--ag-radius-md);
+  font-size: var(--ag-text-sm);
+  font-weight: 700;
+  cursor: pointer;
+  transition: background var(--ag-duration) var(--ag-ease);
+}
+.ag-confirm__yes:hover {
+  background: #B01F33;
+}
+
+.ag-confirm__cancel:focus-visible,
+.ag-confirm__yes:focus-visible {
+  outline: 2px solid var(--ag-accent);
+  outline-offset: 2px;
+}
+
+
+/* ============================================================
+   4. ANIMATIONS
+   All keyframes live at the bottom for easy reference.
+   ============================================================ */
+
+@keyframes ag-slide-down {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes ag-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes ag-pop-in {
+  from {
+    transform: scale(0.92);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes ag-pulse {
+  0%, 100% { opacity: 0; }
+  50%      { opacity: 0.5; }
+}
+
+
+/* ============================================================
+   5. RESPONSIVE — narrower screens
+   On phones or narrow windows, the banner stacks more tightly.
+   ============================================================ */
+@media (max-width: 600px) {
+  .ag-banner {
+    padding: var(--ag-space-2) var(--ag-space-3);
+    gap: var(--ag-space-2);
+    font-size: var(--ag-text-sm);
+  }
+
+  .ag-banner__icon {
+    font-size: 18px;
+  }
+
+  .ag-banner__label {
+    font-size: var(--ag-text-sm);
+  }
+
+  .ag-confirm__box {
+    padding: var(--ag-space-4);
+  }
+}
+
+/* ============================================================
+   "Why This Matters" — Clinical notes inside the dropdown
+   ============================================================ */
+
+.ag-banner__why-heading {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #ffffff;
+  opacity: 0.9;
+  margin: 12px 0 8px 0;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.ag-banner__why-row {
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #ffffff;
+  margin: 8px 0;
+  padding: 8px 12px;
+  background-color: rgba(0, 0, 0, 0.18);
+  border-left: 3px solid rgba(255, 255, 255, 0.6);
+  border-radius: 4px;
+}
+
+.ag-banner__why-label {
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.ag-banner__why-text {
+  font-weight: 400;
+  opacity: 0.95;
+}

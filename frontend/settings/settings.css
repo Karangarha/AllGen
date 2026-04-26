@@ -1,0 +1,576 @@
+/* ============================================================
+   AllergenGuard — Settings Styles
+   The full-page settings styling.
+   Runs in its own browser tab.
+
+   Pulls design tokens from shared/theme.css.
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   1. PAGE CONTAINER
+   Centered, max-width-constrained for readability.
+   ------------------------------------------------------------ */
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background: var(--ag-paper);
+  color: var(--ag-ink);
+}
+
+.ag-settings {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--ag-space-6) var(--ag-space-5);
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--ag-space-6);
+}
+
+
+/* ============================================================
+   2. HEADER
+   Brand on left, page label on right.
+   ============================================================ */
+.ag-settings__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: var(--ag-space-4);
+  border-bottom: 1px solid var(--ag-line);
+}
+
+.ag-settings__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--ag-space-3);
+}
+
+.ag-settings__logo {
+  width: 32px;
+  height: 32px;
+  display: block;
+}
+
+.ag-settings__brand-name {
+  font-size: var(--ag-text-lg);
+  font-weight: 700;
+  color: var(--ag-ink);
+  letter-spacing: -0.01em;
+}
+
+.ag-settings__page-label {
+  font-size: var(--ag-text-sm);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ag-ink-mute);
+}
+
+
+/* ============================================================
+   3. SAVE STATUS PILL
+   Floating "Saved ✓" indicator that flashes after each
+   auto-save. Slides in from the top, holds, slides back out.
+   ============================================================ */
+.ag-settings__save-pill {
+  position: fixed;
+  top: var(--ag-space-5);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ag-space-2);
+  padding: var(--ag-space-2) var(--ag-space-4);
+
+  background: var(--ag-safe);
+  color: #FFFFFF;
+  border-radius: var(--ag-radius-pill);
+  box-shadow: var(--ag-shadow-md);
+
+  font-size: var(--ag-text-sm);
+  font-weight: 600;
+
+  animation: ag-save-flash 1.5s var(--ag-ease) both;
+}
+
+.ag-settings__save-pill[hidden] {
+  display: none;
+}
+
+.ag-settings__save-icon {
+  font-size: var(--ag-text-md);
+  font-weight: 800;
+  line-height: 1;
+}
+
+
+/* ============================================================
+   4. SECTION CONTAINERS
+   Each major area (Allergens, Appearance, About) sits in
+   its own section card.
+   ============================================================ */
+.ag-settings__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ag-space-4);
+  padding: var(--ag-space-5);
+  background: var(--ag-surface);
+  border: 1px solid var(--ag-line);
+  border-radius: var(--ag-radius-lg);
+}
+
+.ag-settings__section-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ag-space-1);
+}
+
+.ag-settings__section-title {
+  margin: 0;
+  font-size: var(--ag-text-lg);
+  font-weight: 700;
+  color: var(--ag-ink);
+  letter-spacing: -0.01em;
+}
+
+.ag-settings__section-sub {
+  margin: 0;
+  font-size: var(--ag-text-sm);
+  color: var(--ag-ink-soft);
+  line-height: 1.5;
+}
+
+
+/* ============================================================
+   5. ALLERGEN GRID (mirrors onboarding)
+   ============================================================ */
+.ag-settings__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--ag-space-3);
+}
+
+
+/* ------------------------------------------------------------
+   5a. Individual allergen card
+   Same visual style as onboarding for consistency.
+   ------------------------------------------------------------ */
+.ag-settings__card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ag-space-2);
+  padding: var(--ag-space-4) var(--ag-space-2);
+  min-height: 100px;
+
+  background: var(--ag-paper);
+  border: 2px solid var(--ag-line);
+  border-radius: var(--ag-radius-md);
+
+  cursor: pointer;
+  user-select: none;
+  transition: all var(--ag-duration) var(--ag-ease);
+}
+
+.ag-settings__card:hover {
+  border-color: var(--ag-accent);
+  transform: translateY(-2px);
+  box-shadow: var(--ag-shadow-sm);
+}
+
+.ag-settings__card:focus-visible {
+  outline: 2px solid var(--ag-accent);
+  outline-offset: 2px;
+}
+
+.ag-settings__card.is-selected {
+  background: var(--ag-accent);
+  border-color: var(--ag-accent);
+  color: #FFFFFF;
+  box-shadow: var(--ag-shadow-md);
+}
+
+.ag-settings__card.is-selected .ag-settings__card-label {
+  color: #FFFFFF;
+}
+
+.ag-settings__card-emoji {
+  font-size: 32px;
+  line-height: 1;
+}
+
+.ag-settings__card-label {
+  font-size: var(--ag-text-sm);
+  font-weight: 600;
+  color: var(--ag-ink);
+  text-align: center;
+  line-height: 1.2;
+}
+
+
+/* Selected indicator — small checkmark in the corner */
+.ag-settings__card-check {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 18px;
+  height: 18px;
+  background: #FFFFFF;
+  color: var(--ag-accent);
+  border-radius: var(--ag-radius-pill);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.ag-settings__card.is-selected .ag-settings__card-check {
+  display: inline-flex;
+  animation: ag-settings-pop 200ms var(--ag-ease) both;
+}
+
+
+/* ------------------------------------------------------------
+   5b. Live count text below grid
+   ------------------------------------------------------------ */
+.ag-settings__count {
+  margin: 0;
+  font-size: var(--ag-text-sm);
+  font-weight: 600;
+  color: var(--ag-ink-soft);
+  text-align: center;
+}
+
+
+/* ============================================================
+   6. ROW PATTERN
+   Reusable label-on-left, value-on-right rows.
+   Used in Appearance and About sections.
+   ============================================================ */
+.ag-settings__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ag-space-4);
+  padding: var(--ag-space-3) 0;
+  border-bottom: 1px solid var(--ag-line);
+}
+
+.ag-settings__row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.ag-settings__row-label {
+  font-size: var(--ag-text-md);
+  font-weight: 500;
+  color: var(--ag-ink);
+}
+
+.ag-settings__row-value {
+  font-size: var(--ag-text-sm);
+  color: var(--ag-ink-soft);
+  font-family: var(--ag-font);
+}
+
+
+/* ============================================================
+   7. THEME TOGGLE (segmented control)
+   Two pill buttons side-by-side, one is "active."
+   ============================================================ */
+.ag-settings__theme-toggle {
+  display: inline-flex;
+  background: var(--ag-paper);
+  border: 1px solid var(--ag-line);
+  border-radius: var(--ag-radius-pill);
+  padding: 3px;
+  gap: 2px;
+}
+
+.ag-settings__theme-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ag-space-2);
+  padding: var(--ag-space-2) var(--ag-space-4);
+
+  background: transparent;
+  color: var(--ag-ink-soft);
+  border: none;
+  border-radius: var(--ag-radius-pill);
+
+  font-family: var(--ag-font);
+  font-size: var(--ag-text-sm);
+  font-weight: 600;
+  cursor: pointer;
+
+  transition: all var(--ag-duration) var(--ag-ease);
+}
+
+.ag-settings__theme-btn:hover:not(.ag-settings__theme-btn--active) {
+  color: var(--ag-ink);
+  background: var(--ag-surface-alt);
+}
+
+.ag-settings__theme-btn:focus-visible {
+  outline: 2px solid var(--ag-accent);
+  outline-offset: 2px;
+}
+
+/* Active state */
+.ag-settings__theme-btn--active {
+  background: var(--ag-accent);
+  color: #FFFFFF;
+  box-shadow: var(--ag-shadow-sm);
+}
+
+.ag-settings__theme-icon {
+  font-size: var(--ag-text-md);
+  line-height: 1;
+}
+
+
+/* ============================================================
+   8. RESET BUTTON
+   Subdued, destructive-style button.
+   ============================================================ */
+.ag-settings__reset-btn {
+  padding: var(--ag-space-2) var(--ag-space-4);
+  background: transparent;
+  color: var(--ag-danger);
+  border: 1px solid var(--ag-danger);
+  border-radius: var(--ag-radius-md);
+
+  font-family: var(--ag-font);
+  font-size: var(--ag-text-sm);
+  font-weight: 600;
+  cursor: pointer;
+
+  transition: all var(--ag-duration) var(--ag-ease);
+}
+
+.ag-settings__reset-btn:hover {
+  background: var(--ag-danger);
+  color: #FFFFFF;
+}
+
+.ag-settings__reset-btn:focus-visible {
+  outline: 2px solid var(--ag-danger);
+  outline-offset: 2px;
+}
+
+
+/* ============================================================
+   9. FOOTER
+   Tiny tagline at the bottom of the page.
+   ============================================================ */
+.ag-settings__footer {
+  display: flex;
+  justify-content: center;
+  padding-top: var(--ag-space-4);
+  border-top: 1px solid var(--ag-line);
+}
+
+.ag-settings__footer-text {
+  font-size: var(--ag-text-xs);
+  color: var(--ag-ink-mute);
+  letter-spacing: 0.04em;
+}
+
+
+/* ============================================================
+   10. CONFIRMATION MODAL
+   Duplicated from alert-banner.css because settings.html
+   doesn't load that file. Same visual treatment.
+   ============================================================ */
+.ag-confirm {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--ag-space-4);
+
+  font-family: var(--ag-font);
+  animation: ag-settings-fade 160ms var(--ag-ease) both;
+}
+
+.ag-confirm[hidden] {
+  display: none;
+}
+
+.ag-confirm__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  cursor: pointer;
+}
+
+.ag-confirm__box {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 420px;
+  padding: var(--ag-space-5);
+
+  background: var(--ag-surface);
+  color: var(--ag-ink);
+  border-radius: var(--ag-radius-lg);
+  box-shadow: var(--ag-shadow-lg);
+
+  animation: ag-settings-pop-in 200ms var(--ag-ease) both;
+}
+
+.ag-confirm__title {
+  margin: 0 0 var(--ag-space-2) 0;
+  font-size: var(--ag-text-lg);
+  font-weight: 700;
+  color: var(--ag-ink);
+}
+
+.ag-confirm__description {
+  margin: 0 0 var(--ag-space-5) 0;
+  font-size: var(--ag-text-sm);
+  color: var(--ag-ink-soft);
+  line-height: 1.5;
+}
+
+.ag-confirm__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--ag-space-2);
+}
+
+.ag-confirm__cancel {
+  padding: var(--ag-space-3) var(--ag-space-4);
+  background: var(--ag-surface-alt);
+  color: var(--ag-ink);
+  border: 1px solid var(--ag-line);
+  border-radius: var(--ag-radius-md);
+  font-family: var(--ag-font);
+  font-size: var(--ag-text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--ag-duration) var(--ag-ease);
+}
+
+.ag-confirm__cancel:hover {
+  background: var(--ag-line);
+}
+
+.ag-confirm__yes {
+  padding: var(--ag-space-3) var(--ag-space-4);
+  background: var(--ag-danger);
+  color: #FFFFFF;
+  border: none;
+  border-radius: var(--ag-radius-md);
+  font-family: var(--ag-font);
+  font-size: var(--ag-text-sm);
+  font-weight: 700;
+  cursor: pointer;
+  transition: background var(--ag-duration) var(--ag-ease);
+}
+
+.ag-confirm__yes:hover {
+  background: #B01F33;
+}
+
+.ag-confirm__cancel:focus-visible,
+.ag-confirm__yes:focus-visible {
+  outline: 2px solid var(--ag-accent);
+  outline-offset: 2px;
+}
+
+
+/* ============================================================
+   11. ANIMATIONS
+   ============================================================ */
+@keyframes ag-save-flash {
+  0% {
+    transform: translateX(-50%) translateY(-100%);
+    opacity: 0;
+  }
+  15% {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+  85% {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-50%) translateY(-100%);
+    opacity: 0;
+  }
+}
+
+@keyframes ag-settings-pop {
+  from {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes ag-settings-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes ag-settings-pop-in {
+  from {
+    transform: scale(0.92);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+
+/* ============================================================
+   12. RESPONSIVE — narrower screens
+   On phones / narrow windows, shrink grid to 2 columns.
+   ============================================================ */
+@media (max-width: 520px) {
+  .ag-settings {
+    padding: var(--ag-space-4) var(--ag-space-3);
+    gap: var(--ag-space-4);
+  }
+
+  .ag-settings__section {
+    padding: var(--ag-space-4);
+  }
+
+  .ag-settings__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .ag-settings__row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--ag-space-2);
+  }
+
+  .ag-settings__theme-toggle {
+    width: 100%;
+  }
+
+  .ag-settings__theme-btn {
+    flex: 1;
+    justify-content: center;
+  }
+}
