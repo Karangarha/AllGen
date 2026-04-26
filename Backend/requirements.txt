@@ -1,0 +1,6 @@
+duckdb
+pymongo
+fastapi
+uvicorn
+pandas
+pyarrow
