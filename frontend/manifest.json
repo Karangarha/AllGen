@@ -29,13 +29,19 @@
   ],
 
   "host_permissions": [
-  "https://*.ubereats.com/*",
-  "https://ubereats.com/*",
-  "https://*.amazon.com/*",
-  "https://amazon.com/*",
-  "https://*.shoprite.com/*",
-  "https://shoprite.com/*"
-],
+    "https://*.ubereats.com/*",
+    "https://ubereats.com/*",
+    "https://*.amazon.com/*",
+    "https://amazon.com/*",
+    "https://*.shoprite.com/*",
+    "https://shoprite.com/*",
+    "http://127.0.0.1:8000/*",
+    "http://localhost:8000/*"
+  ],
+
+  "background": {
+    "service_worker": "background/service-worker.js"
+  },
 
   "content_scripts": [
     {
@@ -46,10 +52,11 @@
         "https://amazon.com/*",
         "https://*.shoprite.com/*",
         "https://shoprite.com/*"
-],
+      ],
       "js": [
         "shared/allergen-data.js",
         "shared/allergen-matcher.js",
+        "shared/api-client.js",
         "scrapers/scraper-ubereats.js",
         "scrapers/scraper-amazon.js",
         "scrapers/scraper-shoprite.js",

@@ -59,9 +59,22 @@
   font-size: var(--ag-text-md);
   line-height: 1.4;
 
+  /* Whole banner header is clickable to toggle the dropdown */
+  cursor: pointer;
+  transition: background var(--ag-duration) var(--ag-ease);
+
   /* Slide-down animation when banner first appears */
   animation: ag-slide-down 220ms var(--ag-ease) both;
 }
+
+/* Subtle darken on hover so users see the header is clickable */
+.ag-banner:hover {
+  background: #B01F33;
+}
+
+/* Dropdown inherits the banner's pointer cursor — clicks anywhere in
+   the red collapse the panel. Buttons inside still get their own
+   pointer (Leave Page) and stop the bubble before the toggle fires. */
 
 /* ------------------------------------------------------------
    2b. Pulsing border — draws the eye without flashing
@@ -249,6 +262,7 @@
   padding: 2px var(--ag-space-2);
   border-radius: var(--ag-radius-sm);
 }
+
 
 .ag-banner__actions {
   display: flex;

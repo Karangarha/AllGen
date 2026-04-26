@@ -125,8 +125,16 @@ function ag_buildBanner(matches) {
   const allergenList = document.createElement("strong");
   allergenList.id = "ag-banner-allergens";
   allergenList.textContent = matches
-    .map(function (m) { return m.allergenLabel.toUpperCase(); })
-    .join(", ");
+    .map(function (m) {
+      const triggers = (m.backendTriggers && m.backendTriggers.length > 0)
+        ? m.backendTriggers
+        : (m.matchedAlias ? [m.matchedAlias] : []);
+      const label = m.allergenLabel.toUpperCase();
+      return triggers.length > 0
+        ? label + ": " + triggers.join(", ")
+        : label;
+    })
+    .join(" · ");
   message.appendChild(allergenList);
 
   textWrap.appendChild(message);
@@ -187,22 +195,40 @@ function ag_buildBanner(matches) {
     details.appendChild(noteRow);
   });
 
-  // ===== Matched ingredient row =====
-  const detailRow = document.createElement("div");
-  detailRow.className = "ag-banner__detail-row";
+  // ===== Matched ingredients section =====
+  // One row per flagged allergen showing every trigger word the
+  // backend (and/or local matcher) found, with a tag indicating
+  // which source detected it.
+  const matchedHeading = document.createElement("div");
+  matchedHeading.className = "ag-banner__why-heading";
+  matchedHeading.textContent = "Matched ingredients";
+  details.appendChild(matchedHeading);
 
-  const detailLabel = document.createElement("span");
-  detailLabel.className = "ag-banner__detail-label";
-  detailLabel.textContent = "Matched ingredient:";
-  detailRow.appendChild(detailLabel);
+  matches.forEach(function (match) {
+    const row = document.createElement("div");
+    row.className = "ag-banner__detail-row";
 
-  const detailValue = document.createElement("span");
-  detailValue.className = "ag-banner__detail-value";
-  detailValue.id = "ag-banner-matched";
-  detailValue.textContent = matches[0].matchedAlias;
-  detailRow.appendChild(detailValue);
+    const label = document.createElement("span");
+    label.className = "ag-banner__detail-label";
+    label.textContent = (match.allergenEmoji ? match.allergenEmoji + " " : "") +
+                        match.allergenLabel.toUpperCase() + ":";
+    row.appendChild(label);
 
-  details.appendChild(detailRow);
+    // Prefer the full backend trigger list (every alias the API matched).
+    // Fall back to whatever single alias the local matcher recorded.
+    const triggers = (match.backendTriggers && match.backendTriggers.length > 0)
+      ? match.backendTriggers
+      : (match.matchedAlias ? [match.matchedAlias] : []);
+
+    triggers.forEach(function (trigger) {
+      const chip = document.createElement("span");
+      chip.className = "ag-banner__detail-value";
+      chip.textContent = trigger;
+      row.appendChild(chip);
+    });
+
+    details.appendChild(row);
+  });
 
   // Action row with the "Leave Page" button
   const actions = document.createElement("div");
@@ -288,26 +314,40 @@ function ag_attachBannerEvents(banner) {
   const details    = banner.querySelector("#ag-banner-details");
   const leaveBtn   = banner.querySelector("#ag-banner-leave");
 
-  // --- Expand / collapse the details panel ---
-  expandBtn.addEventListener("click", function () {
+  // Shared toggle so both the banner-wide click and the chevron
+  // button hit the same code path — no risk of state drift.
+  function toggleDetails() {
     const isOpen = expandBtn.getAttribute("aria-expanded") === "true";
     expandBtn.setAttribute("aria-expanded", isOpen ? "false" : "true");
     details.hidden = isOpen;
+  }
+
+  // --- Click anywhere on the red header → toggle dropdown ---
+  banner.addEventListener("click", toggleDetails);
+
+  // --- Chevron stays — stop bubble so we don't double-toggle ---
+  expandBtn.addEventListener("click", function (e) {
+    e.stopPropagation();
+    toggleDetails();
+  });
+
+  // --- Dismiss (X) → open confirmation modal, NOT toggle dropdown ---
+  dismissBtn.addEventListener("click", function (e) {
+    e.stopPropagation();
+    ag_showConfirmModal(banner);
   });
 
   // --- Leave Page → use browser back history ---
-  leaveBtn.addEventListener("click", function () {
+  // Stop the bubble so clicking "Leave Page" doesn't also toggle the
+  // dropdown on its way to navigating.
+  leaveBtn.addEventListener("click", function (e) {
+    e.stopPropagation();
     if (window.history.length > 1) {
       window.history.back();
     } else {
       // No history — close the tab if extension can, otherwise just dismiss
       window.close();
     }
-  });
-
-  // --- Dismiss (X) → open confirmation modal ---
-  dismissBtn.addEventListener("click", function () {
-    ag_showConfirmModal(banner);
   });
 }
 
@@ -364,9 +404,63 @@ function ag_isDismissed() {
 
 
 /* ------------------------------------------------------------
+   7a. MERGE LOCAL + BACKEND MATCHES
+   The local matcher and the backend scan the same text but use
+   slightly different alias lists, so each can catch hidden
+   allergens the other misses. We union the two result sets
+   (keyed by allergenId) and tag each match with where it was
+   detected so we can surface that in the banner if needed.
+   ------------------------------------------------------------ */
+function ag_mergeBackendMatches(localMatches, apiResult, userIds) {
+  const merged = [];
+  const seen = {};
+
+  localMatches.forEach(function (m) {
+    seen[m.allergenId] = true;
+    merged.push(Object.assign({}, m, { source: "local", backendTriggers: [] }));
+  });
+
+  if (!apiResult || !apiResult.flagged_allergens) {
+    return merged;
+  }
+
+  Object.keys(apiResult.flagged_allergens).forEach(function (allergenId) {
+    if (userIds.indexOf(allergenId) === -1) return;  // user doesn't care
+    const triggers = apiResult.flagged_allergens[allergenId] || [];
+
+    if (seen[allergenId]) {
+      // Mark the existing local match as backend-confirmed
+      const existing = merged.find(function (m) { return m.allergenId === allergenId; });
+      if (existing) {
+        existing.source = "both";
+        existing.backendTriggers = triggers;
+      }
+      return;
+    }
+
+    const allergen = window.AG_getAllergenById(allergenId);
+    if (!allergen) return;
+
+    merged.push({
+      allergenId: allergen.id,
+      allergenLabel: allergen.label,
+      allergenEmoji: allergen.emoji,
+      matchedAlias: triggers.length > 0 ? triggers[0] : "(detected by backend)",
+      source: "backend",
+      backendTriggers: triggers
+    });
+    seen[allergenId] = true;
+  });
+
+  return merged;
+}
+
+
+/* ------------------------------------------------------------
    7. THE MAIN SCAN ROUTINE
-   Asks the scraper, runs the matcher, injects the banner.
-   Bails out cleanly if anything is missing.
+   Asks the scraper, runs the local matcher, asks the backend
+   to cross-verify, and injects the banner if either source
+   flagged something the user cares about.
    ------------------------------------------------------------ */
 function ag_runScan() {
   // Don't re-show banner if user explicitly dismissed it on this URL
@@ -403,23 +497,26 @@ function ag_runScan() {
       return;  // Page didn't have product info — probably not on a product page
     }
 
-    const result = window.AG_scanProduct(product, userIds);
-    if (!result.hasMatch) {
-      return;  // Safe — no allergens detected
-    }
+    const localResult = window.AG_scanProduct(product, userIds);
+    const ingredientsBlob = (product.productName || "") + " " + (product.ingredients || "");
 
-    // Match found! Build and inject the banner
-    const banner = ag_buildBanner(result.matches);
-    document.body.appendChild(banner);
-    ag_attachBannerEvents(banner);
+    // Cross-verify with the backend. Resolves to null if backend is down,
+    // in which case we fall back to local-only matches.
+    const apiPromise = window.AG_apiCheckIngredients
+      ? window.AG_apiCheckIngredients(ingredientsBlob)
+      : Promise.resolve(null);
 
-    // Wrap dismiss handler to also mark this URL as dismissed
-    const originalDismiss = banner.querySelector("#ag-banner-dismiss");
-    if (originalDismiss) {
-      const oldHandler = originalDismiss.onclick;
-      // We can't easily wrap addEventListener, so we hook the modal yes button instead
-      // (handled inside ag_showConfirmModal via the dismiss path)
-    }
+    apiPromise.then(function (apiResult) {
+      const finalMatches = ag_mergeBackendMatches(localResult.matches, apiResult, userIds);
+      if (finalMatches.length === 0) {
+        return;  // Safe per both sources
+      }
+
+      // Match found! Build and inject the banner
+      const banner = ag_buildBanner(finalMatches);
+      document.body.appendChild(banner);
+      ag_attachBannerEvents(banner);
+    });
   });
 }
 

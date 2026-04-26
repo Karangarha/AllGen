@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -c \"from main import app; print\\('OK', [r.path for r in app.routes]\\)\")",
+      "Bash(python3 *)",
+      "Bash(curl -s -i -X OPTIONS http://127.0.0.1:8000/check-ingredients -H \"Origin: chrome-extension://abc\" -H \"Access-Control-Request-Method: POST\" -H \"Access-Control-Request-Headers: content-type\")",
+      "Bash(curl -s -X POST http://127.0.0.1:8000/check-ingredients -H \"Content-Type: application/json\" -H \"Origin: chrome-extension://abc\" -d '{\"ingredients\":\"Enriched flour, whey, soy lecithin, peanut oil, salt\"}')",
+      "Bash(curl *)",
+      "Bash(lsof -nP -iTCP:8000 -sTCP:LISTEN)"
+    ]
+  }
+}
