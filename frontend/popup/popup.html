@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AllergenGuard</title>
+
+  <!-- Shared design tokens (colors, fonts, spacing) -->
+  <link rel="stylesheet" href="../shared/theme.css" />
+
+  <!-- Popup-specific styling -->
+  <link rel="stylesheet" href="popup.css" />
+</head>
+
+<body>
+
+  <!-- ============================================================
+    POPUP CONTAINER
+    Wraps the whole popup. Width and max-height are controlled
+    in popup.css to fit Chrome's popup dimensions (~360x480).
+  ============================================================ -->
+  <main class="ag-popup">
+
+
+    <!-- ============================================================
+      HEADER
+      Shield logo + wordmark on the left, settings gear on the right.
+      The gear opens the full settings page in a new tab.
+    ============================================================ -->
+    <header class="ag-popup__header">
+
+      <!-- Brand: shield logo + name -->
+      <div class="ag-popup__brand">
+        <img
+          src="../assets/images/logo.svg"
+          alt="AllergenGuard logo"
+          class="ag-popup__logo"
+          width="28"
+          height="28" />
+        <span class="ag-popup__title">AllergenGuard</span>
+      </div>
+
+      <!-- Settings gear button -->
+      <button
+        class="ag-popup__settings-btn"
+        id="ag-popup-settings"
+        type="button"
+        aria-label="Open settings">
+        <span class="ag-popup__gear" aria-hidden="true">⚙</span>
+      </button>
+    </header>
+
+
+    <!-- ============================================================
+      STATE A: CONFIGURED
+      Shown when the user has at least 1 allergen selected.
+      JS hides this if user hasn't completed onboarding.
+    ============================================================ -->
+    <section class="ag-popup__state ag-popup__state--configured" id="ag-state-configured">
+
+      <!-- Status block: green dot + label -->
+      <div class="ag-popup__status">
+        <span class="ag-popup__status-dot" aria-hidden="true"></span>
+        <div class="ag-popup__status-text">
+          <strong class="ag-popup__status-label">PROTECTING YOU</strong>
+          <span class="ag-popup__status-sub" id="ag-status-count">
+            0 allergens active
+          </span>
+        </div>
+      </div>
+
+      <!-- Allergen chip grid -->
+      <div class="ag-popup__section">
+        <h2 class="ag-popup__section-title">Your allergens</h2>
+        <div class="ag-popup__chips" id="ag-popup-chips">
+          <!-- Chips populated by JavaScript from storage -->
+        </div>
+      </div>
+
+      <!-- Primary action: open settings -->
+      <div class="ag-popup__actions">
+        <button
+          class="ag-btn-primary ag-popup__manage-btn"
+          id="ag-popup-manage"
+          type="button">
+          Manage Allergens
+        </button>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+      STATE B: NOT YET CONFIGURED
+      Shown when the user has NO allergens selected (fresh install).
+      JS hides this once the user completes onboarding.
+    ============================================================ -->
+    <section class="ag-popup__state ag-popup__state--empty" id="ag-state-empty" hidden>
+
+      <!-- Status block: neutral dot, different label -->
+      <div class="ag-popup__status ag-popup__status--neutral">
+        <span class="ag-popup__status-dot ag-popup__status-dot--neutral" aria-hidden="true"></span>
+        <div class="ag-popup__status-text">
+          <strong class="ag-popup__status-label">NOT YET CONFIGURED</strong>
+        </div>
+      </div>
+
+      <!-- Helper text explaining what to do -->
+      <p class="ag-popup__empty-text">
+        Pick your allergens to start getting warnings on grocery websites.
+      </p>
+
+      <!-- Primary action: open onboarding -->
+      <div class="ag-popup__actions">
+        <button
+          class="ag-btn-primary ag-popup__start-btn"
+          id="ag-popup-start"
+          type="button">
+          Get Started
+        </button>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+      FOOTER
+      Tiny brand footer with version. Optional but adds polish.
+    ============================================================ -->
+    <footer class="ag-popup__footer">
+      <span class="ag-popup__version">v1.0.0</span>
+    </footer>
+  </main>
+
+  <!-- Brain of the popup -->
+  <script src="../shared/allergen-data.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

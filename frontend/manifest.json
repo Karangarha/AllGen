@@ -1,0 +1,76 @@
+{
+  "manifest_version": 3,
+  "name": "AllergenGuard",
+  "version": "1.0.0",
+  "description": "Scans online grocery and food delivery pages for allergens you've selected and warns you instantly.",
+
+  "icons": {
+    "16": "assets/icons/icon-16.png",
+    "32": "assets/icons/icon-32.png",
+    "48": "assets/icons/icon-48.png",
+    "128": "assets/icons/icon-128.png"
+  },
+
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "AllergenGuard",
+    "default_icon": {
+      "16": "assets/icons/icon-16.png",
+      "32": "assets/icons/icon-32.png",
+      "48": "assets/icons/icon-48.png",
+      "128": "assets/icons/icon-128.png"
+    }
+  },
+
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting"
+  ],
+
+  "host_permissions": [
+  "https://*.ubereats.com/*",
+  "https://ubereats.com/*",
+  "https://*.amazon.com/*",
+  "https://amazon.com/*",
+  "https://*.shoprite.com/*",
+  "https://shoprite.com/*"
+],
+
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.ubereats.com/*",
+        "https://ubereats.com/*",
+        "https://*.amazon.com/*",
+        "https://amazon.com/*",
+        "https://*.shoprite.com/*",
+        "https://shoprite.com/*"
+],
+      "js": [
+        "shared/allergen-data.js",
+        "shared/allergen-matcher.js",
+        "scrapers/scraper-ubereats.js",
+        "scrapers/scraper-amazon.js",
+        "scrapers/scraper-shoprite.js",
+        "content/alert-banner.js"
+      ],
+      "css": [
+        "shared/theme.css",
+        "content/alert-banner.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "assets/images/logo.svg",
+        "onboarding/onboarding.html",
+        "settings/settings.html"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

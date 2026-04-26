@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome to AllergenGuard</title>
+
+  <!-- Shared design tokens -->
+  <link rel="stylesheet" href="../shared/theme.css" />
+
+  <!-- Onboarding-specific styling -->
+  <link rel="stylesheet" href="onboarding.css" />
+</head>
+
+<body>
+
+  <!-- ============================================================
+    OUTER CONTAINER
+    Holds the entire onboarding flow. Centered horizontally
+    and vertically in the browser tab.
+  ============================================================ -->
+  <main class="ag-onboard">
+
+    <!-- ============================================================
+      PROGRESS DOTS (top of every screen)
+      5 dots representing the 5 screens. JS toggles which one
+      is "active" (filled) based on the current screen index.
+    ============================================================ -->
+    <nav class="ag-onboard__progress" aria-label="Onboarding progress">
+      <span class="ag-onboard__dot ag-onboard__dot--active" data-step="1" aria-current="step"></span>
+      <span class="ag-onboard__dot" data-step="2"></span>
+      <span class="ag-onboard__dot" data-step="3"></span>
+      <span class="ag-onboard__dot" data-step="4"></span>
+      <span class="ag-onboard__dot" data-step="5"></span>
+    </nav>
+
+
+    <!-- ============================================================
+      SCREEN 1 — WELCOME
+      First impression. Big logo, name, one-line pitch, CTA.
+    ============================================================ -->
+    <section class="ag-onboard__screen ag-onboard__screen--active" id="ag-screen-1" data-step="1">
+      <div class="ag-onboard__hero">
+        <img
+          src="../assets/images/logo.svg"
+          alt="AllergenGuard logo"
+          class="ag-onboard__logo"
+          width="80"
+          height="80" />
+      </div>
+
+      <h1 class="ag-onboard__title">Welcome to AllergenGuard</h1>
+      <p class="ag-onboard__subtitle">
+        Your personal allergen watchdog for grocery delivery and online shopping.
+      </p>
+
+      <div class="ag-onboard__actions">
+        <button
+          class="ag-btn-primary ag-onboard__btn-primary"
+          data-action="next"
+          type="button">
+          Get Started
+        </button>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+      SCREEN 2 — WHY IT MATTERS
+      Establishes the problem AllergenGuard solves.
+      Builds trust by being honest about why this matters.
+    ============================================================ -->
+    <section class="ag-onboard__screen" id="ag-screen-2" data-step="2" hidden>
+      <div class="ag-onboard__hero">
+        <span class="ag-onboard__emoji" aria-hidden="true">🛡️</span>
+      </div>
+
+      <h1 class="ag-onboard__title">Why this matters</h1>
+      <p class="ag-onboard__subtitle">
+        Over 32 million Americans live with food allergies.
+        Online grocery sites often hide ingredients in images or
+        bury them deep in product pages — making allergens easy to miss.
+      </p>
+
+      <p class="ag-onboard__subtitle">
+        AllergenGuard scans every product page automatically and
+        warns you the moment it spots one of your allergens.
+      </p>
+
+      <div class="ag-onboard__actions">
+        <button
+          class="ag-btn-secondary ag-onboard__btn-secondary"
+          data-action="back"
+          type="button">
+          Back
+        </button>
+        <button
+          class="ag-btn-primary ag-onboard__btn-primary"
+          data-action="next"
+          type="button">
+          Continue
+        </button>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+      SCREEN 3 — HOW IT WORKS
+      Tells the user where AllergenGuard runs and what to expect.
+    ============================================================ -->
+    <section class="ag-onboard__screen" id="ag-screen-3" data-step="3" hidden>
+      <div class="ag-onboard__hero">
+        <span class="ag-onboard__emoji" aria-hidden="true">⚡</span>
+      </div>
+
+      <h1 class="ag-onboard__title">How it works</h1>
+      <p class="ag-onboard__subtitle">
+        AllergenGuard works automatically on the most popular food and grocery sites.
+        When it finds one of your allergens, a red banner slides down at the top of the page.
+      </p>
+
+      <!-- Supported platforms list -->
+      <div class="ag-onboard__platforms">
+        <div class="ag-onboard__platform">
+          <span class="ag-onboard__platform-name">Uber Eats</span>
+        </div>
+        <div class="ag-onboard__platform">
+          <span class="ag-onboard__platform-name">Amazon</span>
+        </div>
+        <div class="ag-onboard__platform">
+          <span class="ag-onboard__platform-name">ShopRite</span>
+        </div>
+      </div>
+
+      <div class="ag-onboard__actions">
+        <button
+          class="ag-btn-secondary ag-onboard__btn-secondary"
+          data-action="back"
+          type="button">
+          Back
+        </button>
+        <button
+          class="ag-btn-primary ag-onboard__btn-primary"
+          data-action="next"
+          type="button">
+          Continue
+        </button>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+      SCREEN 4 — PICK YOUR ALLERGENS
+      The most important screen — where the user actually
+      configures the extension. 3x3 grid of the Big 9.
+      JavaScript builds the cards from allergen-data.js.
+    ============================================================ -->
+    <section class="ag-onboard__screen" id="ag-screen-4" data-step="4" hidden>
+      <h1 class="ag-onboard__title">Pick your allergens</h1>
+      <p class="ag-onboard__subtitle">
+        Tap the allergens you want AllergenGuard to watch for.
+        You can change these anytime in settings.
+      </p>
+
+      <!-- Allergen card grid (populated by JS) -->
+      <div class="ag-onboard__grid" id="ag-allergen-grid">
+        <!-- Cards inserted by onboarding.js -->
+      </div>
+
+      <!-- Live counter showing how many allergens are picked -->
+      <p class="ag-onboard__count" id="ag-onboard-count">
+        0 selected
+      </p>
+
+      <div class="ag-onboard__actions">
+        <button
+          class="ag-btn-secondary ag-onboard__btn-secondary"
+          data-action="back"
+          type="button">
+          Back
+        </button>
+        <button
+          class="ag-btn-primary ag-onboard__btn-primary"
+          id="ag-onboard-continue-4"
+          data-action="next"
+          type="button"
+          disabled>
+          Continue
+        </button>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+      SCREEN 5 — YOU'RE PROTECTED
+      Confirmation screen. Shows summary of selected allergens.
+      "Done" saves to storage and closes the tab.
+    ============================================================ -->
+    <section class="ag-onboard__screen" id="ag-screen-5" data-step="5" hidden>
+      <div class="ag-onboard__hero">
+        <span class="ag-onboard__emoji ag-onboard__emoji--success" aria-hidden="true">✓</span>
+      </div>
+
+      <h1 class="ag-onboard__title">You're protected</h1>
+      <p class="ag-onboard__subtitle">
+        AllergenGuard is now watching for
+        <strong id="ag-onboard-summary">your allergens</strong>
+        on supported grocery sites.
+      </p>
+
+      <p class="ag-onboard__subtitle">
+        Visit any product page on DoorDash, Uber Eats, Amazon, or ShopRite —
+        we'll do the rest.
+      </p>
+
+      <div class="ag-onboard__actions">
+        <button
+          class="ag-btn-primary ag-onboard__btn-primary ag-onboard__btn-primary--full"
+          id="ag-onboard-finish"
+          type="button">
+          Start Browsing
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Scripts -->
+  <script src="../shared/allergen-data.js"></script>
+  <script src="onboarding.js"></script>
+</body>
+</html>

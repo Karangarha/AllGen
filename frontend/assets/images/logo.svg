@@ -1,0 +1,42 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 128 128"
+  width="128"
+  height="128"
+  role="img"
+  aria-label="AllergenGuard shield logo">
+
+  <!-- Shield body -->
+  <path
+    d="M64 8
+       C 64 8, 32 16, 16 20
+       L 16 64
+       C 16 92, 38 112, 64 120
+       C 90 112, 112 92, 112 64
+       L 112 20
+       C 96 16, 64 8, 64 8 Z"
+    fill="#264653" />
+
+  <!-- Inner shield highlight -->
+  <path
+    d="M64 18
+       C 64 18, 38 25, 24 28
+       L 24 64
+       C 24 88, 42 105, 64 112
+       C 86 105, 104 88, 104 64
+       L 104 28
+       C 90 25, 64 18, 64 18 Z"
+    fill="none"
+    stroke="#FFFFFF"
+    stroke-width="2"
+    stroke-opacity="0.18" />
+
+  <!-- Checkmark -->
+  <path
+    d="M40 64 L 56 80 L 88 48"
+    fill="none"
+    stroke="#FFFFFF"
+    stroke-width="10"
+    stroke-linecap="round"
+    stroke-linejoin="round" />
+</svg>

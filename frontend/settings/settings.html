@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AllergenGuard Settings</title>
+
+  <!-- Shared design tokens -->
+  <link rel="stylesheet" href="../shared/theme.css" />
+
+  <!-- Settings-specific styling -->
+  <link rel="stylesheet" href="settings.css" />
+</head>
+
+<body>
+
+  <!-- ============================================================
+    OUTER CONTAINER
+    Holds the entire settings page. Centered horizontally.
+  ============================================================ -->
+  <main class="ag-settings">
+
+
+    <!-- ============================================================
+      HEADER
+      Brand on left + page title on right.
+    ============================================================ -->
+    <header class="ag-settings__header">
+      <div class="ag-settings__brand">
+        <img
+          src="../assets/images/logo.svg"
+          alt="AllergenGuard logo"
+          class="ag-settings__logo"
+          width="32"
+          height="32" />
+        <span class="ag-settings__brand-name">AllergenGuard</span>
+      </div>
+
+      <span class="ag-settings__page-label">Settings</span>
+    </header>
+
+
+    <!-- ============================================================
+      SAVE STATUS PILL
+      Small indicator that flashes "Saved ✓" briefly after every
+      auto-save. Hidden by default — JS shows it after writes.
+    ============================================================ -->
+    <div class="ag-settings__save-pill" id="ag-save-pill" hidden>
+      <span class="ag-settings__save-icon" aria-hidden="true">✓</span>
+      <span class="ag-settings__save-text">Saved</span>
+    </div>
+
+
+    <!-- ============================================================
+      SECTION 1 — YOUR ALLERGENS
+      3x3 grid of the Big 9. Auto-saves on every toggle.
+    ============================================================ -->
+    <section class="ag-settings__section">
+      <header class="ag-settings__section-header">
+        <h2 class="ag-settings__section-title">Your Allergens</h2>
+        <p class="ag-settings__section-sub">
+          Tap to toggle. Changes save automatically.
+        </p>
+      </header>
+
+      <!-- Allergen card grid (populated by JS) -->
+      <div class="ag-settings__grid" id="ag-settings-grid">
+        <!-- Cards inserted by settings.js -->
+      </div>
+
+      <!-- Live count of selected allergens -->
+      <p class="ag-settings__count" id="ag-settings-count">
+        0 allergens active
+      </p>
+    </section>
+
+
+    <!-- ============================================================
+      SECTION 2 — APPEARANCE
+      Light/Dark theme toggle as a 2-button pill.
+    ============================================================ -->
+    <section class="ag-settings__section">
+      <header class="ag-settings__section-header">
+        <h2 class="ag-settings__section-title">Appearance</h2>
+        <p class="ag-settings__section-sub">
+          Choose how AllergenGuard looks.
+        </p>
+      </header>
+
+      <!-- Theme toggle pill -->
+      <div class="ag-settings__row">
+        <span class="ag-settings__row-label">Theme</span>
+
+        <div class="ag-settings__theme-toggle" role="group" aria-label="Theme selector">
+          <button
+            class="ag-settings__theme-btn ag-settings__theme-btn--active"
+            id="ag-theme-light"
+            data-theme="light"
+            type="button"
+            aria-pressed="true">
+            <span class="ag-settings__theme-icon" aria-hidden="true">☀</span>
+            <span>Light</span>
+          </button>
+
+          <button
+            class="ag-settings__theme-btn"
+            id="ag-theme-dark"
+            data-theme="dark"
+            type="button"
+            aria-pressed="false">
+            <span class="ag-settings__theme-icon" aria-hidden="true">🌙</span>
+            <span>Dark</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+      SECTION 3 — ABOUT
+      Version info + reset button.
+    ============================================================ -->
+    <section class="ag-settings__section">
+      <header class="ag-settings__section-header">
+        <h2 class="ag-settings__section-title">About</h2>
+      </header>
+
+      <!-- Version row -->
+      <div class="ag-settings__row">
+        <span class="ag-settings__row-label">Version</span>
+        <span class="ag-settings__row-value">1.0.0</span>
+      </div>
+
+      <!-- Reset row -->
+      <div class="ag-settings__row">
+        <span class="ag-settings__row-label">Reset</span>
+        <button
+          class="ag-settings__reset-btn"
+          id="ag-settings-reset"
+          type="button">
+          Reset & Start Over
+        </button>
+      </div>
+    </section>
+
+
+    <!-- ============================================================
+      FOOTER
+      Tiny brand mark at the bottom of the page.
+    ============================================================ -->
+    <footer class="ag-settings__footer">
+      <span class="ag-settings__footer-text">
+        AllergenGuard — Your personal allergen watchdog
+      </span>
+    </footer>
+
+  </main>
+
+
+  <!-- ============================================================
+    CONFIRMATION MODAL — for Reset action
+    Same structure as the banner dismiss modal.
+    Hidden by default; JS reveals when user clicks Reset.
+  ============================================================ -->
+  <div class="ag-confirm" id="ag-confirm" role="dialog" aria-modal="true" hidden>
+
+    <!-- Dark backdrop -->
+    <div class="ag-confirm__backdrop" id="ag-confirm-backdrop"></div>
+
+    <!-- Modal box -->
+    <div class="ag-confirm__box" role="document">
+
+      <h2 class="ag-confirm__title">Reset AllergenGuard?</h2>
+
+      <p class="ag-confirm__description">
+        This will delete all your allergens and reset your preferences.
+        You'll be taken back to the welcome screen. This cannot be undone.
+      </p>
+
+      <div class="ag-confirm__actions">
+        <button
+          class="ag-confirm__cancel"
+          id="ag-confirm-cancel"
+          type="button">
+          Cancel
+        </button>
+        <button
+          class="ag-confirm__yes"
+          id="ag-confirm-yes"
+          type="button">
+          Yes, reset everything
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Scripts -->
+  <script src="../shared/allergen-data.js"></script>
+  <script src="settings.js"></script>
+</body>
+</html>
